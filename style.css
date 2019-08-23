@@ -1,0 +1,15 @@
+body,
+* {
+  margin: 0;
+  padding: 0;
+}
+div {
+  padding: 1rem;
+  background: orange;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  background: lightblue;
+  border-radius: 1rem;
+}

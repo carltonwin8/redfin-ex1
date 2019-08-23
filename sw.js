@@ -1,4 +1,4 @@
-const LATEST_CACHE_ID = "v3";
+const LATEST_CACHE_ID = "v6";
 
 console.log("sw id", LATEST_CACHE_ID);
 
