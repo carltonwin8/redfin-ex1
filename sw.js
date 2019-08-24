@@ -1,4 +1,4 @@
-const LATEST_CACHE_ID = "v6";
+const LATEST_CACHE_ID = "v2";
 
 console.log("sw id", LATEST_CACHE_ID);
 
@@ -20,26 +20,28 @@ self.addEventListener("install", function(event) {
     caches
       .open(LATEST_CACHE_ID)
       .then(cache =>
-        cache
-          .addAll(["/", "/index.html", "/sw-reg.js"])
-          .then(() => self.skipWaiting())
+        cache.addAll(["/", "/index.html", "/sw-reg.js", "/style.css"])
       )
   );
 });
 
 self.addEventListener("activate", function(event) {
   event.waitUntil(
-    caches
-      .keys()
-      .then(keyList =>
-        Promise.all(
-          keyList.map(key => {
-            if (key !== LATEST_CACHE_ID) {
-              return caches.delete(key);
-            }
-          })
-        )
+    caches.keys().then(keyList =>
+      Promise.all(
+        keyList.map(key => {
+          if (key !== LATEST_CACHE_ID) {
+            return caches.delete(key);
+          }
+        })
       )
-      .then(() => self.clients.claim())
+    )
   );
+});
+
+addEventListener("message", messageEvent => {
+  if (messageEvent.data === "skipWaiting") {
+    console.log("skip waiting");
+    return self.skipWaiting();
+  }
 });
