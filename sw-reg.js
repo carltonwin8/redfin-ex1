@@ -2,7 +2,6 @@ const dismiss = document.getElementById("dismiss");
 const refresh = document.getElementById("refresh");
 const newRev = document.getElementById("newRev");
 
-let refreshing;
 let presentSwReg;
 
 refresh.addEventListener(
@@ -12,11 +11,11 @@ refresh.addEventListener(
 dismiss.addEventListener("click", () => (newRev.style.display = "none"));
 const showNewRev = () => (newRev.style.display = "block");
 
-const waitStateChange = reg => {
-  console.log("install statechange", reg.installing);
-  reg.installing.addEventListener("statechange", e => {
-    console.log("saw statechange", e.target.state);
-    if (event.target.state === "installed") showNewRev();
+const waitStateChange = sw => {
+  console.log("install statechange", sw);
+  sw.addEventListener("statechange", function() {
+    console.log("saw statechange", this.state);
+    if (this.state === "installed") showNewRev();
   });
 };
 
@@ -26,11 +25,14 @@ const swReg = () => {
       .register("sw.js")
       .then(reg => {
         console.log("sw registered", reg, reg.waiting, reg.installing);
-        if (!reg) return console.log("invalid sw registration of", reg);
+        if (!navigator.serviceWorker.controller)
+          return console.log("no previous sw so no user prompt");
         presentSwReg = reg;
         if (reg.waiting) return showNewRev();
-        if (reg.installing) waitStateChange(reg);
-        reg.addEventListener("updatefound", waitStateChange(reg));
+        if (reg.installing) return waitStateChange(reg.installing);
+        reg.addEventListener("updatefound", () =>
+          waitStateChange(reg.installing)
+        );
       })
       .catch(e => console.log("failed sw register with", e));
   }
@@ -38,6 +40,7 @@ const swReg = () => {
 
 swReg();
 
+let refreshing;
 navigator.serviceWorker.addEventListener("controllerchange", () => {
   console.log("forced reload due to new sw.");
   if (refreshing) return;
