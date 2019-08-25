@@ -1,6 +1,4 @@
-const LATEST_CACHE_ID = "v3";
-
-console.log("sw id", LATEST_CACHE_ID);
+const LATEST_CACHE_ID = "v2";
 
 addEventListener("fetch", fetchEvent => {
   fetchEvent.respondWith(
@@ -41,7 +39,6 @@ self.addEventListener("activate", function(event) {
 
 addEventListener("message", messageEvent => {
   if (messageEvent.data === "skipWaiting") {
-    console.log("skip waiting");
     return self.skipWaiting();
   }
 });
